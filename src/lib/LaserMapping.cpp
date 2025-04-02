@@ -44,6 +44,8 @@ LaserMapping::LaserMapping(const float& scanPeriod, const size_t& maxIterations)
 
    _aftMappedTrans.frame_id_ = "/camera_init";
    _aftMappedTrans.child_frame_id_ = "/aft_mapped";
+
+   ofs_.open("/home/zh/code/loam_velodyne/src/loam_velodyne/log/LOAM.txt", std::ios::out);
 }
 
 
@@ -308,6 +310,21 @@ void LaserMapping::publishResult()
                                          transformAftMapped().pos.y(),
                                          transformAftMapped().pos.z()));
    _tfBroadcaster.sendTransform(_aftMappedTrans);
+
+    if (!ofs.is_open()) {
+        LOG(ERROR) << "Failed to open traj_file: " << traj_file;
+        return;
+    }
+
+    ofs << "#timestamp x y z q_x q_y q_z q_w" << std::endl;
+    for (const auto &p : path_.poses) {
+        ofs << std::fixed << std::setprecision(6) << p.header.stamp.toSec() << " " << std::setprecision(15)
+            << p.pose.position.x << " " << p.pose.position.y << " " << p.pose.position.z << " " << p.pose.orientation.x
+            << " " << p.pose.orientation.y << " " << p.pose.orientation.z << " " << p.pose.orientation.w << std::endl;
+    }
+
+    ofs.close();
+
 }
 
 } // end namespace loam

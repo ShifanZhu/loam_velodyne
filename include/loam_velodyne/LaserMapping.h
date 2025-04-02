@@ -135,6 +135,7 @@ private:
    ros::Subscriber _subLaserCloudFullRes;      ///< full resolution cloud message subscriber
    ros::Subscriber _subLaserOdometry;          ///< laser odometry message subscriber
    ros::Subscriber _subImu;                    ///< IMU message subscriber
+   std::ofstream _ofs;
 };
 
 } // end namespace loam
